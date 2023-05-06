@@ -1,38 +1,116 @@
-.App {
-  text-align: center;
+@import url("https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap");
+body {
+  background: #e6f7d1;
+  margin: 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+* {
+  font-family: "Julius Sans One", sans-serif;
+  letter-spacing: 3px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: start;
+  background: #84d337;
+  margin: 20px 50px;
+  padding: 30px;
+  width: 450px;
+  height: 380px;
+  box-shadow: 0px 5px 15px 2px #84d337;
 }
 
-.App-link {
-  color: #61dafb;
+h1 {
+  color: #3c3718;
+  margin: 30px 0 50px 0;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+input {
+  padding: 0 15px;
+  width: -webkit-fill-available;
+  margin: 15px;
+  height: 35px;
+  border-radius: 20px;
+  font-weight: bold;
+  background: #e6f7d1;
+  border: 2px solid #e6f7d1;
+  outline: none;
+  color: #3c3718;
+  transition: all 500ms ease-out;
+}
+input:focus {
+  border: 2px solid #3c3718;
+}
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+button {
+  padding: 0 15px;
+  width: -webkit-fill-available;
+  margin: 15px;
+  height: 35px;
+  border-radius: 20px;
+  font-weight: bold;
+  background: #3c3718;
+  margin: 40px 15px 20px 15px;
+  color: #e6f7d1;
+  transition: all 500ms ease-out;
+  animation: lights 4000ms infinite ease-in;
+  border: 0;
+}
+button:hover {
+  border: 1px solid #e6f7d1;
+  box-shadow: 0px 0px 10px 2px #e6f7d1;
+  animation: none;
+}
+
+@keyframes lights {
+  0% {
+    box-shadow: 0px 0px 5px 2px #e6f7d1;
   }
-  to {
-    transform: rotate(360deg);
+  50% {
+    box-shadow: 0px 0px 5px 2px #3c3718;
   }
+  70% {
+    box-shadow: 0px 0px 5px 2px #64896a;
+  }
+  100% {
+    box-shadow: 0px 0px 5px 2px #e6f7d1;
+  }
+}
+a {
+  color: #e6f7d1;
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: bolder;
+  opacity: 0.6;
+  transition: all 300ms ease-in-out;
+}
+a:hover {
+  opacity: 0.9;
+}
+
+table {
+  width: 850px;
+}
+th {
+  padding: 1rem;
+  background-color: #3c3718;
+  color: #e6f7d1;
+}
+td {
+  font-size: small;
+  text-align: center;
 }

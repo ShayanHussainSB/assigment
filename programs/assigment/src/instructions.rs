@@ -39,6 +39,7 @@ pub fn inout(ctx: Context<InOutContext>, args: InOutArgs) -> Result<()> {
     inout.input_one = args.input_one;
     inout.input_two = args.input_two;
     inout.operator = args.operator;
+    inout.wallet = ctx.accounts.signer.key.key();
 
     let result: i64 = match args.operator {
         Operations::Add => inout.input_one + inout.input_two,
