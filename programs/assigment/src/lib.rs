@@ -15,4 +15,8 @@ pub mod assigment {
     pub fn inout(ctx: Context<InOutContext>, args: InOutArgs) -> Result<()> {
         instructions::inout(ctx, args)
     }
+
+    pub fn clear_history(ctx: Context<ClearHistoryContext>) -> Result<()> {
+        instructions::clear_history(ctx)
+    }
 }

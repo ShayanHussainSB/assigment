@@ -1,6 +1,6 @@
 import { AnchorProvider, BN, Program } from "@coral-xyz/anchor";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { Assigment, IDL } from "./assigment";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 
 type operator = "add" | "sub" | "mul" | "div";
 interface tx {
+  address: PublicKey;
   wallet: string;
   one: number;
   two: number;
@@ -45,8 +46,7 @@ export default function Page() {
     [provider]
   );
 
-  // Effects
-
+  // FETCHING TRANSACTIONS
   const fetchTransaction = useCallback(async () => {
     if (!program || !provider || !wallet.publicKey) return [];
 
@@ -60,6 +60,7 @@ export default function Page() {
         },
       ])
     ).map((tx) => ({
+      address: tx.publicKey,
       wallet: tx.account.wallet.toBase58(),
       one: +tx.account.inputOne,
       two: +tx.account.inputTwo,
@@ -83,6 +84,7 @@ export default function Page() {
     fetchTransaction();
   }, [fetchTransaction]);
 
+  // SEND TRANSACTION
   const calculate = useCallback(
     async (one: number, two: number, operation: operator) => {
       if (!program || !provider) return;
@@ -154,6 +156,7 @@ export default function Page() {
         return {
           txid,
           output: {
+            address: address,
             wallet: provider.wallet.publicKey.toBase58(),
             one,
             two,
@@ -175,7 +178,6 @@ export default function Page() {
     },
     [program, provider]
   );
-
   const submit = useCallback(
     async (operator: operator) => {
       setLoading(true);
@@ -205,96 +207,171 @@ export default function Page() {
     [inputs, calculate]
   );
 
+  // CLEAR HISTORY
+  const clearHistory = useCallback(async () => {
+    if (!program || !provider) return;
+
+    if (transactions.length === 0) {
+      toast.warn("No transactions clear");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const batches = Math.ceil(transactions.length / 5);
+      const txPerBatch = 5;
+
+      for (let i = 0; i < batches; i++) {
+        const txns = new Transaction();
+
+        for (let j = 0; j < txPerBatch; j++) {
+          if (i * txPerBatch + j >= transactions.length) break;
+
+          const ins = await program.methods
+            .clearHistory()
+            .accounts({
+              inout: transactions[i * txPerBatch + j].address,
+            })
+            .instruction();
+
+          txns.add(ins);
+        }
+
+        txns.recentBlockhash = (
+          await provider.connection.getLatestBlockhash()
+        ).blockhash;
+        txns.feePayer = provider.wallet.publicKey;
+
+        const signTransaction = await provider.wallet.signTransaction(txns);
+        const txId = await provider.connection.sendRawTransaction(
+          signTransaction.serialize()
+        );
+
+        console.log(txId, "txid");
+      }
+
+      setLoading(false);
+      toast.success("History cleared successfully");
+      setTransactions([]);
+      return;
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+      return;
+    }
+  }, [program, provider, transactions]);
+
   return (
-    <div className="main">
-      <WalletMultiButton />
+    <>
+      <div className="header">
+        <h1>Assigment</h1>
+        <WalletMultiButton />
+      </div>
+      <div className="main">
+        <form>
+          <h1>Calculator</h1>
+          <input
+            type="number"
+            placeholder="First Input"
+            onChange={(e) =>
+              setInputs((prev) => ({
+                ...prev,
+                one: Number(e.target.value),
+              }))
+            }
+            value={inputs.one}
+          />
+          <input
+            type="number"
+            onChange={(e) =>
+              setInputs((prev) => ({
+                ...prev,
+                two: Number(e.target.value),
+              }))
+            }
+            value={inputs.two}
+            placeholder="Second Input"
+          />
+          <div className="buttons">
+            <button
+              type="button"
+              className={loading ? "loading button" : "button"}
+              disabled={loading}
+              onClick={() => submit("add")}
+            >
+              ADD
+            </button>
+            <button
+              type="button"
+              className={loading ? "loading button" : "button"}
+              disabled={loading}
+              onClick={() => submit("sub")}
+            >
+              SUB
+            </button>
+            <button
+              type="button"
+              className={loading ? "loading button" : "button"}
+              disabled={loading}
+              onClick={() => submit("mul")}
+            >
+              MUL
+            </button>
+            <button
+              type="button"
+              className={loading ? "loading button" : "button"}
+              disabled={loading}
+              onClick={() => submit("div")}
+            >
+              DIV
+            </button>
+          </div>
+        </form>
 
-      <form>
-        <h1>Calculator</h1>
-        <input
-          type="number"
-          placeholder="First Input"
-          onChange={(e) =>
-            setInputs((prev) => ({
-              ...prev,
-              one: Number(e.target.value),
-            }))
-          }
-          value={inputs.one}
-        />
-        <input
-          type="number"
-          onChange={(e) =>
-            setInputs((prev) => ({
-              ...prev,
-              two: Number(e.target.value),
-            }))
-          }
-          value={inputs.two}
-          placeholder="Second Input"
-        />
-        <div className="buttons">
-          <button
-            type="button"
-            className={loading ? "loading button" : "button"}
-            disabled={loading}
-            onClick={() => submit("add")}
-          >
-            ADD
-          </button>
-          <button
-            type="button"
-            className={loading ? "loading button" : "button"}
-            disabled={loading}
-            onClick={() => submit("sub")}
-          >
-            SUB
-          </button>
-          <button
-            type="button"
-            className={loading ? "loading button" : "button"}
-            disabled={loading}
-            onClick={() => submit("mul")}
-          >
-            MUL
-          </button>
-          <button
-            type="button"
-            className={loading ? "loading button" : "button"}
-            disabled={loading}
-            onClick={() => submit("div")}
-          >
-            DIV
-          </button>
-        </div>
-      </form>
-
-      <h1>Previous Transaction</h1>
-      <table id="my-table">
-        <thead>
-          <tr className="text-sm font-semibold">
-            <th>Wallet</th>
-            <th>One</th>
-            <th>Two</th>
-            <th>Operation</th>
-            <th>Output</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((tx: tx, index: number) => (
-            <tr key={index}>
-              <td>
-                {tx.wallet.slice(0, 5)}....
-                {tx.wallet.slice(tx.wallet.length - 5, tx.wallet.length)}
-              </td>
-              <td>{tx.one}</td>
-              <td>{tx.two}</td>
-              <td>{tx.operation}</td>
-              <td>{tx.output}</td>
+        <h1>Previous Transaction</h1>
+        <table id="my-table">
+          <thead>
+            <tr className="text-sm font-semibold">
+              <th>Wallet</th>
+              <th>One</th>
+              <th>Two</th>
+              <th>Operation</th>
+              <th>Output</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {!transactions.length ? (
+              <tr>
+                <td>No Previous Record Exist</td>
+              </tr>
+            ) : null}
+            {transactions.map((tx: tx, index: number) => (
+              <tr key={index}>
+                <td>
+                  {tx.wallet.slice(0, 5)}....
+                  {tx.wallet.slice(tx.wallet.length - 5, tx.wallet.length)}
+                </td>
+                <td>{tx.one}</td>
+                <td>{tx.two}</td>
+                <td>{tx.operation}</td>
+                <td>{tx.output}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {transactions.length ? (
+          <button
+            className={loading ? "loading button" : "button"}
+            style={{
+              width: "200px",
+            }}
+            onClick={clearHistory}
+            disabled={transactions.length === 0 && loading}
+          >
+            Clear History
+          </button>
+        ) : null}
+      </div>
+    </>
   );
 }

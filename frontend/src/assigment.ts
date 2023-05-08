@@ -34,6 +34,28 @@ export type Assigment = {
           }
         }
       ]
+    },
+    {
+      "name": "clearHistory",
+      "accounts": [
+        {
+          "name": "inout",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -171,6 +193,28 @@ export const IDL: Assigment = {
           }
         }
       ]
+    },
+    {
+      "name": "clearHistory",
+      "accounts": [
+        {
+          "name": "inout",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [

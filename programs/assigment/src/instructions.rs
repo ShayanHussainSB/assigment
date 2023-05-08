@@ -67,3 +67,22 @@ pub fn inout(ctx: Context<InOutContext>, args: InOutArgs) -> Result<()> {
 
     Ok(())
 }
+
+#[derive(Accounts)]
+pub struct ClearHistoryContext<'info> {
+    #[account(mut, 
+        close = signer,
+        constraint = inout.wallet == signer.key(),
+    )]
+    pub inout: Option<Account<'info, InOut>>,
+
+    #[account(mut)]
+    pub signer: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
+pub fn clear_history(_ctx: Context<ClearHistoryContext>) -> Result<()> {
+    msg!("Clearing history");
+    Ok(())
+}
