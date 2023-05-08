@@ -263,115 +263,134 @@ export default function Page() {
 
   return (
     <>
-      <div className="header">
-        <h1>Assigment</h1>
-        <WalletMultiButton />
-      </div>
-      <div className="main">
-        <form>
-          <h1>Calculator</h1>
-          <input
-            type="number"
-            placeholder="First Input"
-            onChange={(e) =>
-              setInputs((prev) => ({
-                ...prev,
-                one: Number(e.target.value),
-              }))
-            }
-            value={inputs.one}
-          />
-          <input
-            type="number"
-            onChange={(e) =>
-              setInputs((prev) => ({
-                ...prev,
-                two: Number(e.target.value),
-              }))
-            }
-            value={inputs.two}
-            placeholder="Second Input"
-          />
-          <div className="buttons">
-            <button
-              type="button"
-              className={loading ? "loading button" : "button"}
-              disabled={loading}
-              onClick={() => submit("add")}
-            >
-              ADD
-            </button>
-            <button
-              type="button"
-              className={loading ? "loading button" : "button"}
-              disabled={loading}
-              onClick={() => submit("sub")}
-            >
-              SUB
-            </button>
-            <button
-              type="button"
-              className={loading ? "loading button" : "button"}
-              disabled={loading}
-              onClick={() => submit("mul")}
-            >
-              MUL
-            </button>
-            <button
-              type="button"
-              className={loading ? "loading button" : "button"}
-              disabled={loading}
-              onClick={() => submit("div")}
-            >
-              DIV
-            </button>
+      {wallet.publicKey ? (
+        <>
+          <div className="header">
+            <h1>Assigment</h1>
+            <WalletMultiButton />
           </div>
-        </form>
+          <div className="main">
+            <form>
+              <h1>Calculator</h1>
+              <input
+                type="number"
+                placeholder="First Input"
+                onChange={(e) =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    one: Number(e.target.value),
+                  }))
+                }
+                value={inputs.one}
+              />
+              <input
+                type="number"
+                onChange={(e) =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    two: Number(e.target.value),
+                  }))
+                }
+                value={inputs.two}
+                placeholder="Second Input"
+              />
+              <div className="buttons">
+                <button
+                  type="button"
+                  className={loading ? "loading button" : "button"}
+                  disabled={loading}
+                  onClick={() => submit("add")}
+                >
+                  ADD
+                </button>
+                <button
+                  type="button"
+                  className={loading ? "loading button" : "button"}
+                  disabled={loading}
+                  onClick={() => submit("sub")}
+                >
+                  SUB
+                </button>
+                <button
+                  type="button"
+                  className={loading ? "loading button" : "button"}
+                  disabled={loading}
+                  onClick={() => submit("mul")}
+                >
+                  MUL
+                </button>
+                <button
+                  type="button"
+                  className={loading ? "loading button" : "button"}
+                  disabled={loading}
+                  onClick={() => submit("div")}
+                >
+                  DIV
+                </button>
+              </div>
+            </form>
 
-        <h1>Previous Transaction</h1>
-        <table id="my-table">
-          <thead>
-            <tr className="text-sm font-semibold">
-              <th>Wallet</th>
-              <th>One</th>
-              <th>Two</th>
-              <th>Operation</th>
-              <th>Output</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!transactions.length ? (
-              <tr>
-                <td>No Previous Record Exist</td>
-              </tr>
+            <h1>Previous Transaction</h1>
+            <table id="my-table">
+              <thead>
+                <tr className="text-sm font-semibold">
+                  <th>Wallet</th>
+                  <th>One</th>
+                  <th>Two</th>
+                  <th>Operation</th>
+                  <th>Output</th>
+                </tr>
+              </thead>
+              <tbody>
+                {!transactions.length ? (
+                  <tr>
+                    <td>No Previous Record Exist</td>
+                  </tr>
+                ) : null}
+                {transactions.map((tx: tx, index: number) => (
+                  <tr key={index}>
+                    <td>
+                      {tx.wallet.slice(0, 5)}....
+                      {tx.wallet.slice(tx.wallet.length - 5, tx.wallet.length)}
+                    </td>
+                    <td>{tx.one}</td>
+                    <td>{tx.two}</td>
+                    <td>{tx.operation}</td>
+                    <td>{tx.output}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {transactions.length ? (
+              <button
+                className={loading ? "loading button" : "button"}
+                style={{
+                  width: "200px",
+                }}
+                onClick={clearHistory}
+                disabled={transactions.length === 0 && loading}
+              >
+                Clear History
+              </button>
             ) : null}
-            {transactions.map((tx: tx, index: number) => (
-              <tr key={index}>
-                <td>
-                  {tx.wallet.slice(0, 5)}....
-                  {tx.wallet.slice(tx.wallet.length - 5, tx.wallet.length)}
-                </td>
-                <td>{tx.one}</td>
-                <td>{tx.two}</td>
-                <td>{tx.operation}</td>
-                <td>{tx.output}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {transactions.length ? (
-          <button
-            className={loading ? "loading button" : "button"}
-            style={{
-              width: "200px",
-            }}
-            onClick={clearHistory}
-            disabled={transactions.length === 0 && loading}
-          >
-            Clear History
-          </button>
-        ) : null}
-      </div>
+          </div>
+        </>
+      ) : (
+        <section className="main page_404">
+          <div className="four_zero_four_bg">
+            <h1 className="text-center ">404</h1>
+          </div>
+
+          <div className="contant_box_404">
+            <h3 className="h2">
+              Look like we have lost your wallet connection
+            </h3>
+
+            <p>click blow to reconnect your wallet!</p>
+          </div>
+          <WalletMultiButton />
+        </section>
+      )}
     </>
   );
 }

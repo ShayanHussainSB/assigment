@@ -232,3 +232,21 @@ td {
     transform: rotate(360deg);
   }
 }
+
+/* 404 page  */
+
+.page_404 {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.four_zero_four_bg h1 {
+  font-size: 80px;
+}
+
+.four_zero_four_bg h3 {
+  font-size: 80px;
+}
