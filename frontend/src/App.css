@@ -236,6 +236,7 @@ td {
 /* 404 page  */
 
 .page_404 {
+  margin-top: 10rem;
   display: flex;
   flex-direction: column;
   text-align: center;

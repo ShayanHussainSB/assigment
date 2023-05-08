@@ -383,7 +383,7 @@ export default function Page() {
 
           <div className="contant_box_404">
             <h3 className="h2">
-              Look like we have lost your wallet connection
+              Look like your wallet is not connected with us
             </h3>
 
             <p>click blow to reconnect your wallet!</p>
